@@ -1,0 +1,10 @@
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\bin\Debug\JohnCode.exe.config
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\bin\Debug\JohnCode.exe
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\bin\Debug\JohnCode.pdb
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\obj\Debug\JohnCode.csprojAssemblyReference.cache
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\obj\Debug\JohnCode.Properties.Resources.resources
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\obj\Debug\JohnCode.csproj.GenerateResource.cache
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\obj\Debug\JohnCode.csproj.CoreCompileInputs.cache
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\obj\Debug\JohnCode.exe
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\obj\Debug\JohnCode.pdb
+C:\Users\itsjo\source\repos\JohnCode\JohnCode\obj\Debug\JohnCode.JohnCode.resources
