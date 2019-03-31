@@ -15,16 +15,17 @@ namespace JohnCode
         static int stackd = 1000;
         int AH = 0, AL = 0, BH = 0, BL = 0, CH = 0, CL = 0, DH = 0, DL = 0;
         int CS = 0, IP = 0, SS = 0, SP = 0, BP = 0, SI = 0, DI = 0, DS = 0, ES = 0;
-        Boolean click = false, sbs = false;
+        Boolean click=false, sbs=false;
         Int32[,] stack = new Int32[2, stackd];
         string[,] etichette = new string[2, 10];
         string confronto = "";
-        int val1 = 0;
+        int i = 0,s=0;
 
         public JohnCode()
         {
             InitializeComponent();
-        }
+        }  
+
         private void avanti_Click(object sender, EventArgs e)
         {
             click = true;
@@ -38,7 +39,6 @@ namespace JohnCode
                 sbs = true;
             }
         }
-
         public string NomeFile = "";
         public string TestoIniziale = "";
         private void Salva()
@@ -136,12 +136,21 @@ namespace JohnCode
                     return 0;
                 }         
         }
+
         private void StackUpdate()
         {
             StackView.Clear();
             for (int r = 0; r < stackd; r++)
             {
                 StackView.Items.Add("[" + stack[0,r].ToString("x4") + "] " +Convert.ToString(stack[1, r]));
+            }
+        }
+        private void azzerastack()
+        {
+            for (int r = 0; r < stackd; r++)
+            {
+                stack[0, r] = Convert.ToInt32(r);
+                stack[1, r] = 0;
             }
         }
 
@@ -151,15 +160,9 @@ namespace JohnCode
         }
         private void Form1_Load(object sender, EventArgs e)
         {
-
             titolo("Nuovo file");
             avanti.Enabled=false;
-            for(int r=0; r<stackd;r++)
-            {
-                stack[0, r] = Convert.ToInt32(r);
-                stack[1, r] = 0;
-            }
-            StackUpdate();
+            azzerastack();
         }
         private void titolo(string TitoloFile)
         {
@@ -240,10 +243,13 @@ namespace JohnCode
             ControlloTesto();
             Application.Exit();
         }
-     
         private void Debug_Click(object sender, EventArgs e)
         {
-            int i = 0, s = 0;
+            i = 0;
+            s = 0;
+            int inizio = 0;
+            int ultimok = 0;
+            azzerastack();
 
             if (NomeFile != "")
             {
@@ -271,339 +277,494 @@ namespace JohnCode
                 if (righe[k].Contains(":"))
                 {
                     string[] riga = righe[k].Split(separatoreriga);
-                    if (riga[1] != null)
-                    {
-                        etichette[0, i] = righe[k].Substring(0, righe[k].Length - 1);
-                        etichette[1, i] = Convert.ToString(k);
-                        MessageBox.Show(etichette[0, i] + " " + etichette[1, i]);
-                        i++;
-                    }
+                     
+                    etichette[0, i] = righe[k].Substring(0, righe[k].Length - 1);
+                    etichette[1, i] = Convert.ToString(k);
+                    MessageBox.Show(etichette[0, i] + " " + etichette[1, i]);
+                    i++;
+                    
+                }
+                if (righe[k].Contains("Inizio"))
+                {
+                    inizio = k;
                 }
             }
-            for (int k=0;k<righe.Length;k++)
-            {
-
-                if (sbs == true)
-                {
-                    while(click==false)
-                    {
-
-                    }
-                }    
+            for (int k=inizio;k<righe.Length;k++)
+            {                              
                 string[] riga = righe[k].Split(separatoreriga);
+                
                 if (riga[0] == "Muovi" && riga[2] == "in")
-                { 
+                {
                     if (riga[1].Contains("[") && riga[1].Contains("]"))
                     {
-                        
-                        string var = riga[1];
-                        var charsToRemove = new string[] { "[","]" };
+                        int var1 = 0;
+                        string parola = riga[1];
+                        var charsToRemove = new string[] { "[", "]" };
                         foreach (var c in charsToRemove)
                         {
-                            var = var.Replace(c, string.Empty);
+                            parola = parola.Replace(c, string.Empty);
                         }
-                        int VarInt = Convert.ToInt32(var);
-                        for(int ka=0;ka<stackd;ka++)
+                        for (int j = 0; j < stackd; j++)
                         {
-                            if(stack[0,ka]==VarInt)
+                            if (stack[0, j] == Convert.ToInt32(parola))
                             {
-                                val1 =stack[1, ka];
+                                var1 = stack[1, j];
                             }
                         }
                         if (riga[3] == "AH")
                         {
-                            AH = val1;
+                            AH = var1;
                         }
                         else if (riga[3] == "AL")
+
                         {
-                            AL = val1;
+                            AL = var1;
                         }
                         else if (riga[3] == "BH")
                         {
-                            BH = val1;
+                            BH = var1;
                         }
                         else if (riga[3] == "BL")
                         {
-                            BL = val1;
+                            BL = var1;
                         }
                         else if (riga[3] == "CH")
                         {
-                            CH = val1;
+                            CH = var1;
                         }
                         else if (riga[3] == "CL")
                         {
-                            CL = val1;
+                            CL = var1;
                         }
                         else if (riga[3] == "DH")
                         {
-                            DH = val1;
+                            DH = var1;
                         }
                         else if (riga[3] == "DL")
                         {
-                            DL = val1;
+                            DL = var1;
                         }
-                        Controllo();
-                        val1 = 0;
                     }
-                    
+                    else if (riga[3].Contains("[") && riga[3].Contains("]"))
+                    {
+                        int pos = 0;
+                        int rip = 0;
+                        string parola = riga[3];
+                        var charsToRemove = new string[] { "[", "]" };
+                        foreach (var c in charsToRemove)
+                        {
+                            parola = parola.Replace(c, string.Empty);
+                        }
+                        if (riga[1] == "AH")
+                        {
+                            rip = AH;
+                        }
+                        else if (riga[1] == "AL")
+
+                        {
+                            rip = AL;
+                        }
+                        else if (riga[1] == "BH")
+                        {
+                            rip = BH;
+                        }
+                        else if (riga[1] == "BL")
+                        {
+                            rip = BL;
+                        }
+                        else if (riga[1] == "CH")
+                        {
+                            rip = CH;
+                        }
+                        else if (riga[1] == "CL")
+                        {
+                            rip = CL;
+                        }
+                        else if (riga[1] == "DH")
+                        {
+                            rip = DH;
+                        }
+                        else if (riga[1] == "DL")
+                        {
+                            rip = DL;
+                        }
+                        else
+                        {
+                            rip = Convert.ToInt32(riga[1]);
+                        }
+                        for (int j = 0; j < stackd; j++)
+                        {
+                            
+                            if (stack[0, j] == Convert.ToInt32(parola))
+                            {
+                                stack[1, j] = rip;
+                            }
+                        }
+                    }
                     else if (int.TryParse(riga[1], out i))
                     {
-                        if (riga[3] == "AH")
-                            {
-                                AH = Convert.ToInt16(riga[1]);
-                            }
+                        if (riga[3] == "AH") 
+                        {
+                            AH = Convert.ToInt16(riga[1]);
+                        }
                         else if (riga[3] == "AL")
-                            {
-                                AL = Convert.ToInt16(riga[1]);
-                            }
+                        {
+                            AL = Convert.ToInt16(riga[1]);
+                        }
                         else if (riga[3] == "BH")
-                            {
-                                BH = Convert.ToInt16(riga[1]);
-                            }
+                        {
+                            BH = Convert.ToInt16(riga[1]);
+                        }
                         else if (riga[3] == "BL")
-                            {
-                                BL = Convert.ToInt16(riga[1]);
-                            }
+                        {
+                            BL = Convert.ToInt16(riga[1]);
+                        }
                         else if (riga[3] == "CH")
-                            {
-                                CH = Convert.ToInt16(riga[1]);
-                            }
+                        {
+                            CH = Convert.ToInt16(riga[1]);
+                        }
                         else if (riga[3] == "CL")
-                            {
-                                CL = Convert.ToInt16(riga[1]);
-                            }
+                        {
+                            CL = Convert.ToInt16(riga[1]);
+                        }
                         else if (riga[3] == "DH")
-                            {
-                                DH = Convert.ToInt16(riga[1]);
-                            }
+                        {
+                            DH = Convert.ToInt16(riga[1]);
+                        }
                         else if (riga[3] == "DL")
-                            {
-                                DL = Convert.ToInt16(riga[1]);
-                            }
-
+                        {
+                            DL = Convert.ToInt16(riga[1]);
+                        }
                     }
                     else
                     {
                         int ValVar = var(riga[1]);
                         if (riga[3] == "AH")
-                        {
-                            AH = ValVar;
-                        }
+                            {
+                                AH = ValVar;
+                            }
                         else if (riga[3] == "AL")
-                        {
-                            AL = ValVar;
-                        }
+                            {
+                                AL = ValVar;
+                            }
                         else if (riga[3] == "BH")
-                        {
-                            BH = ValVar;
-                        }
+                            {
+                                BH = ValVar;
+                            }
                         else if (riga[3] == "BL")
-                        {
-                            BL = ValVar;
-                        }
+                            {
+                                BL = ValVar;
+                            }
                         else if (riga[3] == "CH")
-                        {
-                            CH = ValVar;
-                        }
+                            {
+                                CH = ValVar;
+                            }
                         else if (riga[3] == "CL")
-                        {
-                            CL = ValVar;
-                        }
+                            {
+                                CL = ValVar;
+                            }
                         else if (riga[3] == "DH")
-                        {
-                            DH = ValVar;
-                        }
+                            {
+                                DH = ValVar;
+                            }
                         else if (riga[3] == "DL")
                         {
                             DL = ValVar;
                         }
                     }
                     Controllo();
-                    StackUpdate();
-                    }
+                }
                 if (riga[0] == "Aggiungi" && riga[2] == "a")
                     {
                     if (riga[1].Contains("[") && riga[1].Contains("]"))
                     {
-
-                        string var = riga[1];
+                        int var1 = 0;
+                        string parola = riga[1];
                         var charsToRemove = new string[] { "[", "]" };
                         foreach (var c in charsToRemove)
                         {
-                            var = var.Replace(c, string.Empty);
+                            parola = parola.Replace(c, string.Empty);
                         }
-                        int VarInt = Convert.ToInt32(var);
-                        for (int ka = 0; ka < stackd; ka++)
+                        for (int j = 0; j < stackd; j++)
                         {
-                            if (stack[0, ka] == VarInt)
+                            if (stack[0, j] == Convert.ToInt32(parola))
                             {
-                                val1 = stack[1, ka];
+                                var1 = stack[1, j];
                             }
                         }
                         if (riga[3] == "AH")
                         {
-                            AH = AH+ val1;
+                            AH = AH+ var1;
                         }
                         else if (riga[3] == "AL")
+
                         {
-                            AL =AL+ val1;
+                            AL = AH + var1;
                         }
                         else if (riga[3] == "BH")
                         {
-                            BH =BH+ val1;
+                            BH = AH + var1;
                         }
                         else if (riga[3] == "BL")
                         {
-                            BL =BL+ val1;
+                            BL = AH + var1;
                         }
                         else if (riga[3] == "CH")
                         {
-                            CH = CH+ val1;
+                            CH = AH + var1;
                         }
                         else if (riga[3] == "CL")
                         {
-                            CL = CL+ val1;
+                            CL = AH + var1;
                         }
                         else if (riga[3] == "DH")
                         {
-                            DH =DH+ val1;
+                            DH = AH + var1;
                         }
                         else if (riga[3] == "DL")
                         {
-                            DL = DL+ val1;
+                            DL = AH + var1;
                         }
-                        Controllo();
-                        val1 = 0;
+                    }
+                    else if (riga[3].Contains("[") && riga[3].Contains("]"))
+                    {
+                        int pos = 0;
+                        int rip = 0;
+                        string parola = riga[3];
+                        var charsToRemove = new string[] { "[", "]" };
+                        foreach (var c in charsToRemove)
+                        {
+                            parola = parola.Replace(c, string.Empty);
+                        }
+                        if (riga[1] == "AH")
+                        {
+                            rip = AH;
+                        }
+                        else if (riga[1] == "AL")
+
+                        {
+                            rip = AL;
+                        }
+                        else if (riga[1] == "BH")
+                        {
+                            rip = DH;
+                        }
+                        else if (riga[1] == "BL")
+                        {
+                            rip = BL;
+                        }
+                        else if (riga[1] == "CH")
+                        {
+                            rip = CH;
+                        }
+                        else if (riga[1] == "CL")
+                        {
+                            rip = CL;
+                        }
+                        else if (riga[1] == "DH")
+                        {
+                            rip = DH;
+                        }
+                        else if (riga[1] == "DL")
+                        {
+                            rip = DL;
+                        }
+                        else
+                        {
+                            rip = Convert.ToInt32(riga[1]);
+                        }
+                        for (int j = 0; j < stackd; j++)
+                        {
+
+                            if (stack[0, j] == Convert.ToInt32(parola))
+                            {
+                                stack[1, j] = stack[1, j] + rip;
+                            }
+                        }
                     }
                     else if (int.TryParse(riga[1], out i))
+                    {
+                        if (riga[3] == "AH")
                         {
-                            if (riga[3] == "AH")
-                            {
-                                AH = AH + Convert.ToInt16(riga[1]);
-                            }
-                            else if (riga[3] == "AL")
-                            {
-                                AL = AL + Convert.ToInt16(riga[1]);
-                            }
-                            else if (riga[3] == "BH")
-                            {
-                                BH = BH + Convert.ToInt16(riga[1]);
-                            }
-                            else if (riga[3] == "BL")
-                            {
-                                BL = BL + Convert.ToInt16(riga[1]);
-                            }
-                            else if (riga[3] == "CH")
-                            {
-                                CH = CH + Convert.ToInt16(riga[1]);
-                            }
-                            else if (riga[3] == "CL")
-                            {
-                                CL = CL + Convert.ToInt16(riga[1]);
-                            }
-                            else if (riga[3] == "DH")
-                            {
-                                DH = DH + Convert.ToInt16(riga[1]);
-                            }
-                            else if (riga[3] == "DL")
-                            {
-                                DL = DL + Convert.ToInt16(riga[1]);
-                            }
+                            AH = AH + Convert.ToInt16(riga[1]);
                         }
+                        else if (riga[3] == "AL")
+                        {
+                           AL = AL + Convert.ToInt16(riga[1]);
+                        }
+                        else if (riga[3] == "BH")
+                        {
+                            BH = BH + Convert.ToInt16(riga[1]);
+                        }
+                        else if (riga[3] == "BL")
+                        {
+                            BL = BL + Convert.ToInt16(riga[1]);
+                        }
+                        else if (riga[3] == "CH")
+                        {
+                            CH = CH + Convert.ToInt16(riga[1]);
+                        }
+                        else if (riga[3] == "CL")
+                        {
+                            CL = CL + Convert.ToInt16(riga[1]);
+                        }
+                        else if (riga[3] == "DH")
+                        {
+                            DH = DH + Convert.ToInt16(riga[1]);
+                        }
+                        else if (riga[3] == "DL")
+                        {
+                            DL = DL + Convert.ToInt16(riga[1]);
+                        }
+                    }
                     else
+                    {
+                        int ValVar = var(riga[1]);
+                        if (riga[3] == "AH")
                         {
-                            int ValVar = var(riga[1]);
-                            if (riga[3] == "AH")
-                            {
-                                AH = AH + ValVar;
-                            }
-                            else if (riga[3] == "AL")
-                            {
-                                AL = AL + ValVar;
-                            }
-                            else if (riga[3] == "BH")
-                            {
-                                BH = BH + ValVar;
-                            }
-                            else if (riga[3] == "BL")
-                            {
-                                BL = BL + ValVar;
-                            }
-                            else if (riga[3] == "CH")
-                            {
-                                CH = CH + ValVar;
-                            }
-                            else if (riga[3] == "CL")
-                            {
-                                CL = CL + ValVar;
-                            }
-                            else if (riga[3] == "DH")
-                            {
-                                DH = DH + ValVar;
-                            }
-                            else if (riga[3] == "DL")
-                            {
-                                DL = DL + ValVar;
-                            }
+                            AH = AH + ValVar;
                         }
+                        else if (riga[3] == "AL")
+                        {
+                            AL = AL + ValVar;
+                        }
+                        else if (riga[3] == "BH")
+                        {
+                            BH = BH + ValVar;
+                        }
+                        else if (riga[3] == "BL")
+                        {
+                            BL = BL + ValVar;
+                        }
+                        else if (riga[3] == "CH")
+                        {
+                            CH = CH + ValVar;
+                        }
+                        else if (riga[3] == "CL")
+                        {
+                            CL = CL + ValVar;
+                        }
+                        else if (riga[3] == "DH")
+                        {
+                            DH = DH + ValVar;
+                        }
+                        else if (riga[3] == "DL")
+                        {
+                            DL = DL + ValVar;
+                        }
+                    }
                     Controllo();
-                    StackUpdate();
                 }
                 if (riga[0] == "Sottrai" && riga[2] == "a")
                 {
                     if (riga[1].Contains("[") && riga[1].Contains("]"))
                     {
-
-                        string var = riga[1];
+                        int var1 = 0;
+                        string parola = riga[1];
                         var charsToRemove = new string[] { "[", "]" };
                         foreach (var c in charsToRemove)
                         {
-                            var = var.Replace(c, string.Empty);
+                            parola = parola.Replace(c, string.Empty);
                         }
-                        int VarInt = Convert.ToInt32(var);
-                        for (int ka = 0; ka < stackd; ka++)
+                        for (int j = 0; j < stackd; j++)
                         {
-                            if (stack[0, ka] == VarInt)
+                            if (stack[0, j] == Convert.ToInt32(parola))
                             {
-                                val1 = stack[1, ka];
+                                var1 = stack[1, j];
                             }
                         }
                         if (riga[3] == "AH")
                         {
-                            AH = AH - val1;
+                            AH = AH - var1;
                         }
                         else if (riga[3] == "AL")
+
                         {
-                            AL = AL - val1;
+                            AL = AH - var1;
                         }
                         else if (riga[3] == "BH")
                         {
-                            BH = BH - val1;
+                            BH = AH - var1;
                         }
                         else if (riga[3] == "BL")
                         {
-                            BL = BL - val1;
+                            BL = AH - var1;
                         }
                         else if (riga[3] == "CH")
                         {
-                            CH = CH - val1;
+                            CH = AH - var1;
                         }
                         else if (riga[3] == "CL")
                         {
-                            CL = CL - val1;
+                            CL = AH - var1;
                         }
                         else if (riga[3] == "DH")
                         {
-                            DH = DH - val1;
+                            DH = AH - var1;
                         }
                         else if (riga[3] == "DL")
                         {
-                            DL = DL - val1;
+                            DL = AH - var1;
                         }
-                        Controllo();
-                        val1 = 0;
                     }
-                    if (int.TryParse(riga[1], out i))
+                    else if (riga[3].Contains("[") && riga[3].Contains("]"))
+                    {
+                        int pos = 0;
+                        int rip = 0;
+                        string parola = riga[3];
+                        var charsToRemove = new string[] { "[", "]" };
+                        foreach (var c in charsToRemove)
+                        {
+                            parola = parola.Replace(c, string.Empty);
+                        }
+                        if (riga[1] == "AH")
+                        {
+                            rip = AH;
+                        }
+                        else if (riga[1] == "AL")
+
+                        {
+                            rip = AL;
+                        }
+                        else if (riga[1] == "BH")
+                        {
+                            rip = DH;
+                        }
+                        else if (riga[1] == "BL")
+                        {
+                            rip = BL;
+                        }
+                        else if (riga[1] == "CH")
+                        {
+                            rip = CH;
+                        }
+                        else if (riga[1] == "CL")
+                        {
+                            rip = CL;
+                        }
+                        else if (riga[1] == "DH")
+                        {
+                            rip = DH;
+                        }
+                        else if (riga[1] == "DL")
+                        {
+                            rip = DL;
+                        }
+                        else
+                        {
+                            rip = Convert.ToInt32(riga[1]);
+                        }
+                        for (int j = 0; j < stackd; j++)
+                        {
+
+                            if (stack[0, j] == Convert.ToInt32(parola))
+                            {
+                                stack[1, j] = stack[1, j] - rip;
+                            }
+                        }
+                    }
+                    bool risultato = int.TryParse(riga[1], out i);
+                    if (risultato == true)
                     {
                         if (riga[3] == "AH")
                         {
@@ -674,8 +835,7 @@ namespace JohnCode
                             DL = DL - ValVar;
                         }
                     }
-                    Controllo();
-                    StackUpdate();
+                        Controllo();
                 }
                 if (riga[0] == "Salta" && riga[1] == "a")
                 {
@@ -816,8 +976,7 @@ namespace JohnCode
                     }
                     else if (riga[1] == "DL")
                     {
-                        DL--
-;
+                        DL--;
                     }
                     Controllo();
                 }
@@ -827,8 +986,64 @@ namespace JohnCode
                     s++;
                     StackUpdate();
                 }
+                else if (riga[0] == "Poppa")
+                {
+                    int varpop = stack[1, k - 1];
+                    if (riga[1] == "AH")
+                    {
+                        AH = varpop;
+                    }
+                    else if (riga[1] == "AL")
+                    {
+                        AL = varpop;
+                    }
+                    else if (riga[1] == "BH")
+                    {
+                        BH = varpop;
+                    }
+                    else if (riga[1] == "BL")
+                    {
+                        BL = varpop;
+                    }
+                    else if (riga[1] == "CH")
+                    {
+                        CH = varpop;
+                    }
+                    else if (riga[1] == "CL")
+                    {
+                        CL = varpop;
+                    }
+                    else if (riga[1] == "DH")
+                    {
+                        DH = varpop;
+                    }
+                    else if (riga[1] == "DL")
+                    {
+                        DL = varpop;
+                    }
+                }
+                else if (riga[0] == "Fine")
+                {
+                    return;
+                }
+                else if (riga[0] == "Chiama")
+                {
+                    for (int z=0;z<i;z++)
+                    {
+                        if(etichette[0,z] == riga[1])
+                        {
+                            ultimok = k;
+                            k = Convert.ToInt32(etichette[1, z]);
+                            MessageBox.Show("Ciao");
+                        }
+                    }
+                }
+                else if (riga[0] == "FineFunzione")
+                {
+                    k = ultimok;
+                }
+                StackUpdate();
             }
-             
         }
     }
 }
